@@ -12,3 +12,12 @@ git remote add origin https://github.com/hary-maker/Guiapp.git
 git remote add origin https://github.com/hary-maker/Guiapp.git
  git branch -M main 
 git push -u origin main
+
+git config
+git config -Global user.name "Nombre de usuario" # Se utiliza Para cambiar nombre de usuario
+git config -Global user.email "Correo" # Se utiliza para cambiar el correo del usuario
+
+ls # se utiliza para visualizar las carpetas
+
+Git log # Se utiliza Para visualizar quien ha hecho cambios
+
