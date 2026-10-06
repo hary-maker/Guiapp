@@ -19,5 +19,15 @@ git config -Global user.email "Correo" # Se utiliza para cambiar el correo del u
 
 ls # se utiliza para visualizar las carpetas
 
-Git log # Se utiliza Para visualizar quien ha hecho cambios
+Git log # "Se utiliza Para visualizar quien ha hecho cambios"
+Git status # "para ver como estan  los archivos"
+Git add . # Guardar todos los archivos o "nombre de archivo para individual"
+
+Git commit -m # "Colocar un comentario"
+
+git push # " entrar con credenciales"
+
+Git push -u origin main # "subir el archivo a gitbash"
+
+
 
