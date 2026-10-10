@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Didáctico: Fundamentos de Bases de Datos Relacionales | SENA CDIEC</title>
+    <style>
+        :root {
+            --primary: #39A900; /* Verde SENA */
+            --primary-dark: #2d8200;
+            --primary-light: #e8f7e3;
+            --secondary: #00324D; /* Azul Institucional SENA */
+            --accent: #FF6600;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #0ea5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #001a29 100%);
+            color: white;
+            padding: 24px 32px;
+            border-bottom: 5px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .badge-sena {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-ficha {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 8px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        /* Nav Tabs */
+        .nav-container {
+            max-width: 1200px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-dark);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        /* Content Area */
+        main {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .tab-panel {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p.description {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Button toolbar */
+        .btn-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .btn-action {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .btn-action.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(57, 169, 0, 0.3);
+        }
+
+        /* Dynamic Info Box */
+        .info-card {
+            background: var(--primary-light);
+            border-left: 5px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            min-height: 80px;
+            transition: all 0.3s;
+        }
+
+        .info-card h4 {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            color: #1e3a17;
+            line-height: 1.4;
+        }
+
+        /* Interactive Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* Highlighting classes */
+        .hl-entity {
+            outline: 4px solid #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .hl-column {
+            background-color: #fef3c7 !important;
+            border-color: #f59e0b !important;
+            box-shadow: inset 0 0 0 2px #f59e0b;
+        }
+
+        .hl-row {
+            background-color: #e0f2fe !important;
+            box-shadow: inset 0 0 0 2px #0284c7;
+        }
+
+        .hl-cell {
+            background-color: #fce7f3 !important;
+            box-shadow: inset 0 0 0 3px #ec4899;
+            font-weight: bold;
+            transform: scale(1.05);
+        }
+
+        .hl-pk {
+            background-color: #dcfce7 !important;
+            color: #15803d !important;
+            font-weight: bold;
+            box-shadow: inset 0 0 0 2px #22c55e;
+        }
+
+        .hl-fk {
+            background-color: #ffedd5 !important;
+            color: #c2410c !important;
+            font-weight: bold;
+            box-shadow: inset 0 0 0 2px #f97316;
+        }
+
+        /* Relations Visualizer Styles */
+        .rel-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .entity-box {
+            background: #fff;
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .entity-header {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .connector-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+            color: var(--secondary);
+            gap: 12px;
+        }
+
+        .badge-cardinality {
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        /* Quiz styles */
+        .quiz-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-q {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-opt {
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .quiz-opt:hover {
+            background: #f1f5f9;
+        }
+
+        .quiz-opt.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .quiz-opt.incorrect {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .feedback-text {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { padding: 16px; }
+            h1 { font-size: 1.4rem; }
+            .tab-panel { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <div>
+                <span class="badge-sena">SENA CDIEC (9232)</span>
+                <span class="badge-ficha">FICHA: 3571501 — TÉCNICO EN PROCESAMIENTO DE DATOS PARA IA</span>
+            </div>
+            <div style="font-size: 0.85rem; opacity: 0.9;">
+                Facilitador: Melqui Alexander Romero Veru
+            </div>
+        </div>
+        <h1>Tablero Interactivo de Bases de Datos Relacionales</h1>
+        <div class="subtitle">Herramienta audiovisual para el aula de clase: de cero a modelo relacional sin código</div>
+    </header>
+
+    <div class="nav-container">
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-anatomia', this)">
+                🔬 1. Anatomía de una Tabla
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-llaves', this)">
+                🔑 2. Llaves Primarias y Foráneas
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-relaciones', this)">
+                🔗 3. Cardinalidades (1:1, 1:N, N:M)
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-integridad', this)">
+                🛡️ 4. Simulador de Integridad
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-quiz', this)">
+                ⚡ 5. Preguntas Rápidas en Clase
+            </button>
+        </nav>
+    </div>
+
+    <main>
+        <!-- TAB 1: ANATOMÍA -->
+        <section id="tab-anatomia" class="tab-panel active">
+            <h2>🔬 Anatomía Interactiva de una Entidad (Tabla)</h2>
+            <p class="description">Haga clic en los botones para resaltar cada componente de la tabla y entender por qué se llama así y cuál es su función en el almacenamiento de datos.</p>
+
+            <div class="btn-toolbar">
+                <button class="btn-action active" onclick="highlightComponent('todo', this)">👀 Todo el Conjunto</button>
+                <button class="btn-action" onclick="highlightComponent('entidad', this)">🏢 Entidad / Tabla Completa</button>
+                <button class="btn-action" onclick="highlightComponent('atributo', this)">📐 Atributo / Columna</button>
+                <button class="btn-action" onclick="highlightComponent('registro', this)">👤 Registro / Fila / Tupla</button>
+                <button class="btn-action" onclick="highlightComponent('celda', this)">💎 Celda / Valor Atómico</button>
+                <button class="btn-action" onclick="highlightComponent('pk', this)">🔑 Llave Primaria (PK)</button>
+            </div>
+
+            <div id="info-box-anatomia" class="info-card">
+                <h4>👀 Vista General de la Estructura</h4>
+                <p>Una tabla relacional es una cuadrícula bidimensional organizada donde las columnas definen <b>qué características</b> guardamos y las filas representan <b>cada individuo real</b>.</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="tabla-ejemplo">
+                    <thead>
+                        <tr>
+                            <th id="col-pk">id_aprendiz [PK]</th>
+                            <th>tipo_documento</th>
+                            <th>num_documento</th>
+                            <th id="col-nombres">nombres</th>
+                            <th>apellidos</th>
+                            <th>edad</th>
+                            <th>estado_formativo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="fila-1">
+                            <td class="td-pk">1</td>
+                            <td>CC</td>
+                            <td>1024567890</td>
+                            <td id="celda-laura">Laura Sofía</td>
+                            <td>Gómez Pérez</td>
+                            <td>21</td>
+                            <td>ACTIVO</td>
+                        </tr>
+                        <tr id="fila-2">
+                            <td class="td-pk">2</td>
+                            <td>TI</td>
+                            <td>1089234567</td>
+                            <td>Carlos Andrés</td>
+                            <td>Meza Rincón</td>
+                            <td>17</td>
+                            <td>ACTIVO</td>
+                        </tr>
+                        <tr id="fila-3">
+                            <td class="td-pk">3</td>
+                            <td>CC</td>
+                            <td>1012398475</td>
+                            <td>Valentina</td>
+                            <td>Torres Díaz</td>
+                            <td>24</td>
+                            <td>CONDICIONADO</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 2: LLAVES -->
+        <section id="tab-llaves" class="tab-panel">
+            <h2>🔑 Llaves Primarias (PK) y Llaves Foráneas (FK)</h2>
+            <p class="description">Descubra cómo las llaves permiten conectar información entre dos tablas sin duplicar textos ni cometer errores humanos.</p>
+
+            <div class="rel-card-grid">
+                <!-- Tabla Principal -->
+                <div class="entity-box">
+                    <div class="entity-header">
+                        <span>TABLA PADRE: fichas</span>
+                        <span class="badge-cardinality">Origen (1)</span>
+                    </div>
+                    <div style="padding: 15px;">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                            Guarda la información de cada grupo <b>una sola vez</b>.
+                        </p>
+                        <table style="font-size: 0.85rem;">
+                            <thead>
+                                <tr>
+                                    <th style="background:#dcfce7; color:#15803d;">codigo_ficha [PK]</th>
+                                    <th>programa</th>
+                                    <th>ambiente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background:#f0fdf4;">
+                                    <td style="font-weight:bold; color:#15803d;">3571501</td>
+                                    <td>Datos para IA</td>
+                                    <td>CV-306</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bold; color:#15803d;">2894102</td>
+                                    <td>ADSO Software</td>
+                                    <td>CV-309</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabla Secundaria -->
+                <div class="entity-box">
+                    <div class="entity-header" style="background:#0284c7;">
+                        <span>TABLA HIJA: aprendices</span>
+                        <span class="badge-cardinality">Destino (N)</span>
+                    </div>
+                    <div style="padding: 15px;">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                            Usa la Llave Foránea (FK) como <b>apuntador</b> hacia la ficha correspondiente.
+                        </p>
+                        <table style="font-size: 0.85rem;">
+                            <thead>
+                                <tr>
+                                    <th style="background:#dcfce7; color:#15803d;">id_aprendiz [PK]</th>
+                                    <th>nombres</th>
+                                    <th style="background:#ffedd5; color:#c2410c;">codigo_ficha [FK]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:bold; color:#15803d;">1</td>
+                                    <td>Laura Gómez</td>
+                                    <td style="font-weight:bold; color:#c2410c; background:#fff7ed;">3571501 ➔ (IA)</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bold; color:#15803d;">2</td>
+                                    <td>Carlos Meza</td>
+                                    <td style="font-weight:bold; color:#c2410c; background:#fff7ed;">3571501 ➔ (IA)</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bold; color:#15803d;">3</td>
+                                    <td>Andrés Castro</td>
+                                    <td style="font-weight:bold; color:#c2410c; background:#fff7ed;">2894102 ➔ (ADSO)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top: 25px; background:#eff6ff; border-left-color:#3b82f6;">
+                <h4 style="color:#1d4ed8;">💡 Regla de Oro del Instructor:</h4>
+                <p style="color:#1e3a8a;">
+                    En lugar de escribir "Datos para IA" 30 veces en la tabla de aprendices, solo escribimos el número <b>3571501</b>. Si mañana cambia el nombre del programa, solo se actualiza una sola celda en la tabla padre. ¡Cero duplicidad!
+                </p>
+            </div>
+        </section>
+
+        <!-- TAB 3: RELACIONES Y CARDINALIDADES -->
+        <section id="tab-relaciones" class="tab-panel">
+            <h2>🔗 Los Tres Tipos de Cardinalidad</h2>
+            <p class="description">Seleccione una cardinalidad para comprender cómo interactúan las entidades en la realidad.</p>
+
+            <div class="btn-toolbar">
+                <button class="btn-action active" onclick="showRelation('1-1', this)">1️⃣ a 1️⃣ (Uno a Uno)</button>
+                <button class="btn-action" onclick="showRelation('1-N', this)">1️⃣ a ♾️ (Uno a Muchos)</button>
+                <button class="btn-action" onclick="showRelation('N-M', this)">♾️ a ♾️ (Muchos a Muchos)</button>
+            </div>
+
+            <div id="rel-content">
+                <!-- Dinámico -->
+            </div>
+        </section>
+
+        <!-- TAB 4: SIMULADOR DE INTEGRIDAD -->
+        <section id="tab-integridad" class="tab-panel">
+            <h2>🛡️ Simulador de Integridad Referencial en Vivo</h2>
+            <p class="description">Pruebe qué respondería el motor de base de datos relacional si un usuario o programa intenta realizar operaciones prohibidas.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:20px;">
+                    <h3 style="font-size:1.1rem; color:var(--secondary); margin-bottom:10px;">Experimento 1: Insertar Registro Huérfano</h3>
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">
+                        Intentar registrar un nuevo aprendiz asociándolo a la ficha inexistente <code>9999999</code>.
+                    </p>
+                    <button class="btn-action" style="background:#fee2e2; border-color:#fca5a5; color:#991b1b;" onclick="simularHuerfano()">
+                        ⚠️ Intentar Matricular en Ficha 9999999
+                    </button>
+                    <div id="res-exp-1" style="margin-top:15px; font-size:0.9rem; padding:10px; border-radius:6px; display:none;"></div>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:20px;">
+                    <h3 style="font-size:1.1rem; color:var(--secondary); margin-bottom:10px;">Experimento 2: Duplicar Llave Primaria</h3>
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">
+                        Intentar registrar un aprendiz usando el ID <code>1</code> que ya le pertenece a Laura Gómez.
+                    </p>
+                    <button class="btn-action" style="background:#fee2e2; border-color:#fca5a5; color:#991b1b;" onclick="simularPKDuplicada()">
+                        ⚠️ Intentar Insertar con id_aprendiz = 1
+                    </button>
+                    <div id="res-exp-2" style="margin-top:15px; font-size:0.9rem; padding:10px; border-radius:6px; display:none;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: QUIZ INTERACTIVO -->
+        <section id="tab-quiz" class="tab-panel">
+            <h2>⚡ Preguntas de Diagnóstico Rápido para el Tablero</h2>
+            <p class="description">Haga estas preguntas a los aprendices en el salón de clase para verificar su comprensión en tiempo real.</p>
+
+            <!-- Q1 -->
+            <div class="quiz-card">
+                <div class="quiz-q">1. ¿Por qué una Llave Primaria (PK) no puede tener el valor NULL jamás?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="evalQuiz(this, false, 'q1')">A) Porque el motor de base de datos se queda sin memoria RAM.</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, true, 'q1')">B) Porque si no tiene valor, es imposible saber qué fila o individuo representa exactamente.</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, false, 'q1')">C) Porque el valor NULL solo se permite en columnas de números decimales.</button>
+                </div>
+                <div id="fb-q1" class="feedback-text"></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card">
+                <div class="quiz-q">2. En una relación de Uno a Muchos (1:N) entre FICHA y APRENDICES, ¿en qué tabla se ubica la Llave Foránea?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="evalQuiz(this, false, 'q2')">A) En la tabla FICHAS, porque es la tabla principal.</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, true, 'q2')">B) En la tabla APRENDICES, porque la FK siempre va en el lado de los muchos para no violar la atomicidad.</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, false, 'q2')">C) En ambas tablas al mismo tiempo para asegurar doble conexión.</button>
+                </div>
+                <div id="fb-q2" class="feedback-text"></div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-card">
+                <div class="quiz-q">3. ¿Cómo se soluciona una relación Muchos a Muchos (N:M) en una Base de Datos Relacional?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="evalQuiz(this, false, 'q3')">A) Guardando una lista de IDs separados por comas dentro de una sola celda.</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, false, 'q3')">B) Borrando una de las dos tablas para evitar el cruce de datos.</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, true, 'q3')">C) Creando una tabla intermedia (tabla puente) que descompone la relación en dos relaciones 1:N limpias.</button>
+                </div>
+                <div id="fb-q3" class="feedback-text"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navegación de pestañas
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Resaltado de partes de la tabla
+        function highlightComponent(comp, btn) {
+            // Actualizar botones
+            document.querySelectorAll('#tab-anatomia .btn-action').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Limpiar clases
+            const tabla = document.getElementById('tabla-ejemplo');
+            tabla.classList.remove('hl-entity');
+            document.querySelectorAll('th, td, tr').forEach(el => {
+                el.classList.remove('hl-column', 'hl-row', 'hl-cell', 'hl-pk', 'hl-fk');
+            });
+
+            const info = document.getElementById('info-box-anatomia');
+
+            switch(comp) {
+                case 'todo':
+                    info.innerHTML = `<h4>👀 Vista General de la Estructura</h4><p>Una tabla relacional es una cuadrícula bidimensional organizada donde las columnas definen <b>qué características</b> guardamos y las filas representan <b>cada individuo real</b>.</p>`;
+                    break;
+                case 'entidad':
+                    tabla.classList.add('hl-entity');
+                    info.innerHTML = `<h4>🏢 La Entidad (La Tabla Completa)</h4><p>Representa el <b>concepto u objeto del mundo real</b> sobre el cual almacenamos información (ej: <code>aprendices</code>). Se llama "entidad" porque tiene existencia propia en nuestro negocio o centro de formación.</p>`;
+                    break;
+                case 'atributo':
+                    document.getElementById('col-nombres').classList.add('hl-column');
+                    document.getElementById('celda-laura').classList.add('hl-column');
+                    document.querySelectorAll('td:nth-child(4)').forEach(td => td.classList.add('hl-column'));
+                    info.innerHTML = `<h4>📐 Atributo (Columna / Campo)</h4><p>Es una <b>propiedad o característica</b> de la entidad. Todos los datos de esta columna vertical comparten el mismo tipo de dato (ej. la columna <code>nombres</code> siempre guarda texto <code>VARCHAR</code>).</p>`;
+                    break;
+                case 'registro':
+                    document.getElementById('fila-1').classList.add('hl-row');
+                    info.innerHTML = `<h4>👤 Registro (Fila / Tupla / Instancia)</h4><p>Representa <b>un único individuo u ocurrencia real</b>. Toda la fila horizontal corresponde exclusivamente a <b>Laura Sofía Gómez Pérez</b>.</p>`;
+                    break;
+                case 'celda':
+                    document.getElementById('celda-laura').classList.add('hl-cell');
+                    info.innerHTML = `<h4>💎 Celda (Valor Atómico)</h4><p>La intersección entre una fila y una columna. La regla de oro es la <b>atomicidad</b>: debe guardar un solo dato indivisible (nunca listas de nombres ni mezclas de teléfonos).</p>`;
+                    break;
+                case 'pk':
+                    document.getElementById('col-pk').classList.add('hl-pk');
+                    document.querySelectorAll('.td-pk').forEach(el => el.classList.add('hl-pk'));
+                    info.innerHTML = `<h4>🔑 Llave Primaria (Primary Key - PK)</h4><p>El atributo que garantiza que ninguna fila se confunda con otra. Es <b>único e irrepetible</b> y jamás puede tener un valor <code>NULL</code>.</p>`;
+                    break;
+            }
+        }
+
+        // Render de Relaciones
+        function showRelation(tipo, btn) {
+            document.querySelectorAll('#tab-relaciones .btn-action').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const container = document.getElementById('rel-content');
+
+            if(tipo === '1-1') {
+                container.innerHTML = `
+                    <div class="connector-indicator">
+                        <span>🧔 CIUDADANO (1)</span>
+                        <span style="font-size:1.4rem;">⟷</span>
+                        <span class="badge-cardinality">1 a 1</span>
+                        <span style="font-size:1.4rem;">⟷</span>
+                        <span>🛂 PASAPORTE VIGENTE (1)</span>
+                    </div>
+                    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:20px;">
+                        <h4 style="color:var(--secondary); margin-bottom:8px;">Características del 1:1:</h4>
+                        <p style="margin-bottom:10px;">Cada ciudadano tiene máximo un pasaporte vigente; y cada pasaporte pertenece a un solo ciudadano.</p>
+                        <p style="font-size:0.9rem; color:var(--text-muted);"><b>Uso común:</b> Separar información sensible (ej. historia clínica de un empleado) o información que no todos los usuarios tienen.</p>
+                    </div>
+                `;
+            } else if(tipo === '1-N') {
+                container.innerHTML = `
+                    <div class="connector-indicator">
+                        <span>🏫 FICHA (1)</span>
+                        <span style="font-size:1.4rem;">───────</span>
+                        <span class="badge-cardinality">1 a Muchos (1:N)</span>
+                        <span style="font-size:1.4rem;">───────➔</span>
+                        <span>🎓 APRENDICES (N)</span>
+                    </div>
+                    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:20px;">
+                        <h4 style="color:var(--secondary); margin-bottom:8px;">Características del 1:N:</h4>
+                        <p style="margin-bottom:10px;">Una ficha agrupa a 30 aprendices. Pero cada aprendiz pertenece a <b>una sola ficha activa</b>.</p>
+                        <p style="font-size:0.9rem; color:#c2410c; font-weight:bold;">Regla de diseño: La Llave Foránea (FK) se coloca en la tabla APRENDICES apuntando al código de la FICHA.</p>
+                    </div>
+                `;
+            } else if(tipo === 'N-M') {
+                container.innerHTML = `
+                    <div class="connector-indicator" style="background:#fef2f2; border:1px solid #fecaca; color:#991b1b;">
+                        <span>🎓 APRENDIZ (N)</span>
+                        <span style="font-size:1.4rem;">❌ IMPOSIBLE DIRECTO ❌</span>
+                        <span>📚 COMPETENCIA (M)</span>
+                    </div>
+                    <div style="background:#f0fdf4; border:2px dashed #22c55e; border-radius:8px; padding:20px; margin-top:15px;">
+                        <h4 style="color:#15803d; margin-bottom:8px;">✨ La Solución Maestra: La Tabla Intermedia</h4>
+                        <p style="margin-bottom:15px;">Un aprendiz cursa muchas competencias, y una competencia la ven muchos aprendices. Para no romper la base de datos, creamos la tabla intermedia <code>matricula_competencias</code>:</p>
+                        
+                        <div style="display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:10px; font-weight:bold;">
+                            <div style="background:white; padding:10px 15px; border-radius:6px; border:1px solid #cbd5e1;">APRENDIZ (1)</div>
+                            <span>➔ [1:N] ➔</span>
+                            <div style="background:#dcfce7; padding:12px 18px; border-radius:6px; border:2px solid #22c55e; color:#15803d;">
+                                🌉 MATRICULA_COMPETENCIAS<br>
+                                <span style="font-size:0.75rem; font-weight:normal; color:#166534;">Lleva: id_aprendiz (FK) + id_competencia (FK)</span>
+                            </div>
+                            <span>➔ [N:1] ➔</span>
+                            <div style="background:white; padding:10px 15px; border-radius:6px; border:1px solid #cbd5e1;">COMPETENCIA (1)</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Cargar 1-1 por defecto en relaciones
+        showRelation('1-1', { classList: { add: () => {} } });
+
+        // Simulaciones de integridad
+        function simularHuerfano() {
+            const res = document.getElementById('res-exp-1');
+            res.style.display = 'block';
+            res.style.backgroundColor = '#fee2e2';
+            res.style.color = '#991b1b';
+            res.style.border = '1px solid #ef4444';
+            res.innerHTML = `
+                <b>🚫 ERROR DE INTEGRIDAD REFERENCIAL DETENIDO:</b><br>
+                <code>FOREIGN KEY CONSTRAINT FAILED: codigo_ficha '9999999' does not exist in table 'fichas'.</code><br>
+                <span style="font-size:0.85rem; color:#7f1d1d;">El motor relacional protegió la base de datos impidiendo crear un aprendiz huérfano.</span>
+            `;
+        }
+
+        function simularPKDuplicada() {
+            const res = document.getElementById('res-exp-2');
+            res.style.display = 'block';
+            res.style.backgroundColor = '#fee2e2';
+            res.style.color = '#991b1b';
+            res.style.border = '1px solid #ef4444';
+            res.innerHTML = `
+                <b>🚫 ERROR DE LLAVE PRIMARIA DUPLICADA:</b><br>
+                <code>PRIMARY KEY UNIQUE CONSTRAINT FAILED: id_aprendiz '1' already exists in table 'aprendices'.</code><br>
+                <span style="font-size:0.85rem; color:#7f1d1d;">El sistema impidió la colisión de identidad: Laura Gómez ya posee el ID 1.</span>
+            `;
+        }
+
+        // Evaluación del Quiz
+        function evalQuiz(btn, isCorrect, qId) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.quiz-opt').forEach(b => {
+                b.disabled = true;
+                b.style.cursor = 'default';
+            });
+
+            const fb = document.getElementById('fb-' + qId);
+            fb.style.display = 'block';
+
+            if(isCorrect) {
+                btn.classList.add('correct');
+                fb.style.color = '#15803d';
+                fb.innerHTML = '🎉 ¡CORRECTO! Excelente razonamiento relacional.';
+            } else {
+                btn.classList.add('incorrect');
+                fb.style.color = '#b91c1c';
+                fb.innerHTML = '❌ Incorrecto. Revisa el concepto clave con el instructor.';
+            }
+        }
+    </script>
+</body>
+</html>
