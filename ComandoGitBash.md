@@ -29,5 +29,5 @@ git push # " entrar con credenciales"
 
 Git push -u origin main # "subir el archivo a gitbash"
 
-
+Code . # " Se utiza para abri el aplicativo de visualizacion de codigo"
 
