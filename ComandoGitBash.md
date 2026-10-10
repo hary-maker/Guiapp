@@ -25,7 +25,7 @@ Git add . # Guardar todos los archivos o "nombre de archivo para individual"
 
 Git commit -m # "Colocar un comentario"
 
-git push # " entrar con credenciales"
+git push # " subir archivos"
 
 Git push -u origin main # "subir el archivo a gitbash"
 
